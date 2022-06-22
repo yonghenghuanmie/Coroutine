@@ -19,6 +19,7 @@ template<typename Response>
 struct coroutine :std::coroutine_handle<promise_<Response>>
 {
 	using promise_type = promise_<Response>;
+	~coroutine() { this->destroy(); }
 };
 
 template<typename AsyncResponse>
