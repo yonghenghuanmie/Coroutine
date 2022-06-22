@@ -7,6 +7,8 @@
 #include <algorithm>
 #include <coroutine>
 #include "cpr/cpr.h"
+#include "metalang99.h"
+#include "ConstraintType.h"
 
 using namespace std::chrono_literals;
 
@@ -41,6 +43,12 @@ struct awaitable
 	}
 };
 
+namespace ConstraintType
+{
+	AddTypeLayer(0, awaitable);
+	ConstructEligibleType(AwaitableType, 1, 0, Any<void>);
+}
+
 template<typename Response>
 struct promise_
 {
@@ -55,8 +63,8 @@ struct promise_
 
 	void return_value(const Response& response) noexcept { this->response = std::move(response); }
 
-	template<typename AsyncResponse>
-	awaitable<AsyncResponse> await_transform(const awaitable<AsyncResponse>& awaiter) { return awaiter; }
+	template<typename Awaitable, ConstraintType::AwaitableType Allow = std::remove_cvref_t<Awaitable>>
+	Awaitable await_transform(Awaitable&& awaiter) { return std::forward<Awaitable&&>(awaiter); }
 	template<typename AsyncResponse>
 	awaitable<AsyncResponse> await_transform(AsyncResponse&& response) { return { response }; }
 

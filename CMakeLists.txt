@@ -17,3 +17,24 @@ FetchContent_Declare(
 ) # The commit hash for 1.8.2. Replace with the latest from: https://github.com/libcpr/cpr/releases
 FetchContent_MakeAvailable(cpr)
 target_link_libraries(${PROJECT_NAME} PRIVATE cpr::cpr)
+
+# Show actual C++ version for MSVC
+# Use compliant C11 preprocessor for MSVC
+if(MSVC)
+    target_compile_options(${PROJECT_NAME} PRIVATE /Zc:__cplusplus /Zc:preprocessor)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE ML99_ALLOW_POOR_DIAGNOSTICS)
+# Metalang99 relies on heavy macro machinery. To avoid useless macro expansion
+# errors, please write this:
+elseif(CMAKE_C_COMPILER_ID STREQUAL "Clang")
+    target_compile_options(${PROJECT_NAME} PRIVATE -fmacro-backtrace-limit=1)
+elseif(CMAKE_C_COMPILER_ID STREQUAL "GNU")
+    target_compile_options(${PROJECT_NAME} PRIVATE -ftrack-macro-expansion=0)
+endif()
+
+FetchContent_Declare(
+    ConstraintType
+    URL https://github.com/yonghenghuanmie/Component/archive/refs/tags/v1.3.2.tar.gz # v1.3.2
+    SOURCE_SUBDIR ConstraintType
+)
+FetchContent_MakeAvailable(ConstraintType)
+target_link_libraries(${PROJECT_NAME} PRIVATE ConstraintType)
