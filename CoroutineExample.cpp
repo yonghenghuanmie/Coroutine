@@ -65,7 +65,7 @@ struct promise_
 	void return_value(const Response& response) noexcept { this->response = std::move(response); }
 
 	template<typename Awaitable, ConstraintType::AwaitableType Allow = std::remove_cvref_t<Awaitable>>
-	Awaitable await_transform(Awaitable&& awaiter) { return std::forward<Awaitable&&>(awaiter); }
+	Awaitable await_transform(Awaitable&& awaiter) { return std::forward<Awaitable>(awaiter); }
 	template<typename AsyncResponse>
 	awaitable<AsyncResponse> await_transform(AsyncResponse&& response) { return { response }; }
 
